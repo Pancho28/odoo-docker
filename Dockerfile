@@ -2,23 +2,19 @@ FROM odoo:19.0
 
 USER root
 
-# Instalamos gosu
+# 1. Instalamos gosu para el manejo de permisos en el arranque
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gosu && \
     rm -rf /var/lib/apt/lists/*
 
-# Creamos las rutas
-RUN mkdir -p /mnt/extra-addons /debug /var/lib/odoo
+# 2. Preparamos el volumen de datos
+RUN mkdir -p /var/lib/odoo
 
-# COPIAMOS EL ARCHIVO (Asegúrate de que el nombre a la izquierda 
-# sea EXACTAMENTE igual al que ves en GitHub)
-COPY railway-setup.sh /railway-setup.sh
+# 3. Exponemos los puertos: 
+# 8069: Tráfico HTTP estándar (ERP)
+# 8072: Tráfico Longpolling (Chat/Notificaciones)
+EXPOSE 8069 8072
 
-# Verificamos si el archivo existe antes de darle permisos (para debuguear el log)
-RUN ls -la /railway-setup.sh && chmod +x /railway-setup.sh
-
-COPY ./extra-addon[s] /mnt/extra-addons
-COPY ./debu[g] /debug
-
-ENTRYPOINT ["/railway-setup.sh"]
-CMD ["odoo"]
+# 4. El comando "Inline" que corrige permisos y lanza el configurador oficial
+# Usamos 'exec' para que Odoo sea el proceso principal (PID 1)
+CMD ["sh", "-c", "chown -R odoo:odoo /var/lib/odoo && exec /entrypoint.sh odoo"]
