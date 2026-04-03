@@ -8,8 +8,8 @@ USER root
 RUN mkdir -p /mnt/extra-addons /debug
 
 # Copiamos tus módulos y scripts de test (si existen en tu repo)
-COPY ./extra-addons /mnt/extra-addons
-COPY ./debug /debug
+COPY ./extra-addon[s] /mnt/extra-addons
+COPY ./debu[g] /debug
 
 # Aseguramos que el usuario 'odoo' sea el dueño de todo
 RUN chown -R odoo:odoo /mnt/extra-addons /debug /var/lib/odoo
