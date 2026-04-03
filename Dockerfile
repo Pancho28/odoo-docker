@@ -12,11 +12,11 @@ RUN mkdir -p /mnt/extra-addons /debug /var/lib/odoo && \
 COPY ./extra-addon[s] /mnt/extra-addons
 COPY ./debu[g] /debug
 # Copiamos con el nuevo nombre para evitar el loop
-COPY railway-setup[s].sh /railway-setup.sh
-
+# Copiamos TU script desde el repo al contenedor
+COPY railway-setup.sh /railway-setup.sh
 RUN chmod +x /railway-setup.sh
 
-# El ENTRYPOINT ahora es nuestro script con nombre único
+# Le decimos a Docker que empiece por TU script
 ENTRYPOINT ["/railway-setup.sh"]
 
 CMD ["odoo"]
