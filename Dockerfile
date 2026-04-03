@@ -1,26 +1,26 @@
-# Imagen oficial de Odoo 19.0
 FROM odoo:19.0
 
-# Cambio a root para gestionar carpetas y permisos
 USER root
 
-# Creacion directorios para módulos personalizados y debugging
-RUN mkdir -p /mnt/extra-addons /debug
-# Creacion de archivos placeholders
-RUN touch /mnt/extra-addons/.placeholder /debug/.placeholder
+# Instalamos gosu para la gestión segura de privilegios
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gosu && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copiamos tus módulos y scripts de test (si existen en tu repo)
+# Creamos las rutas necesarias y placeholders para evitar warnings
+RUN mkdir -p /mnt/extra-addons /debug /var/lib/odoo && \
+    touch /mnt/extra-addons/.placeholder /debug/.placeholder
+
+# Copiamos el contenido de tu repo (usando comodines para evitar errores si están vacíos)
 COPY ./extra-addon[s] /mnt/extra-addons
 COPY ./debu[g] /debug
+COPY entrypoint.sh /entrypoint.sh
 
-# Aseguramos que el usuario 'odoo' sea el dueño de todo
-RUN chown -R odoo:odoo /mnt/extra-addons /debug /var/lib/odoo
+# Damos permisos de ejecución al script de entrada
+RUN chmod +x /entrypoint.sh
 
-# Volvemos al usuario odoo por seguridad (Principio de menor privilegio)
-USER odoo
+# El contenedor siempre pasará por el script antes de iniciar Odoo
+ENTRYPOINT ["/entrypoint.sh"]
 
-# Exponemos el puerto por defecto de Odoo
-EXPOSE 8069 8072
-
-# Comando de inicio (Railway pasará las variables de entorno automáticamente)
+# Comando por defecto que se pasará como argumento al entrypoint
 CMD ["odoo"]
