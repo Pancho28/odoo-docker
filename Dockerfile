@@ -12,7 +12,7 @@ RUN mkdir -p /mnt/extra-addons /debug /var/lib/odoo && \
 COPY ./extra-addon[s] /mnt/extra-addons
 COPY ./debu[g] /debug
 # Copiamos con el nuevo nombre para evitar el loop
-COPY railway-setup.sh /railway-setup.sh
+COPY railway-setup[s].sh /railway-setup.sh
 
 RUN chmod +x /railway-setup.sh
 
