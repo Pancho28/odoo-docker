@@ -1,11 +1,13 @@
-# Usamos la imagen oficial de Odoo 19.0
+# Imagen oficial de Odoo 19.0
 FROM odoo:19.0
 
-# Cambiamos a root para gestionar carpetas y permisos
+# Cambio a root para gestionar carpetas y permisos
 USER root
 
-# Creamos directorios para módulos personalizados y debugging
+# Creacion directorios para módulos personalizados y debugging
 RUN mkdir -p /mnt/extra-addons /debug
+# Creacion de archivos placeholders
+RUN touch /mnt/extra-addons/.placeholder /debug/.placeholder
 
 # Copiamos tus módulos y scripts de test (si existen en tu repo)
 COPY ./extra-addon[s] /mnt/extra-addons
